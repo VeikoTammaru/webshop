@@ -1,0 +1,20 @@
+.voti{
+    display: inline-block;
+    width: 200px;
+    border-bottom: 1px dotted rgb(0, 0, 0,0.2);
+    
+}
+.EE{
+    display: inline-block;
+    width: 200px;
+    border-bottom: 1px dotted rgb(0, 0, 0,0.2);
+}   
+.EN{
+    display: inline-block;
+    width: 200px;
+    border-bottom: 1px dotted rgb(0, 0, 0,0.2);
+}   
+.tyhi {
+    background-color: rgb(204, 151, 113);
+    height:1.5em;
+}
