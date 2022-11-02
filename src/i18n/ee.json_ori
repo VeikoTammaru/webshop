@@ -1,0 +1,29 @@
+{"translation": {
+        "Nav.admin": "Administraatori vaatesse"
+        , "Nav.shops":  "Poed" 
+        , "Nav.about": "Meist"
+        , "Nav.chart": "Ostukorv"
+        , "toys robots" :"R Mänguasjad"
+        
+        , "admin.addProduct": "Lisa toode"
+        , "admin.maintainProduct": "Halda tooteid"
+
+        , "admin.editName": "Nimi"
+        , "admin.editPrice": "Hind"
+        , "admin.editCategory":"Katekooria"
+        , "admin.editDescription":"Kirjeldus"
+        , "admin.editImage":"Pilt"
+        , "admin.editActive":"On aktiivne"
+        , "admin.editNoFound":"Toodet ei leitud"
+
+        , "button.change":"Muuda"
+        , "button.add":"Lisa"
+        , "button.erase":"Kustuta"
+        , "button.empty": "Tühjenda"
+
+        , "chart.total":"Summa"
+        , "chart.inChart": "Ostukorvis"
+        
+    
+    }
+}

@@ -1,26 +1,33 @@
-import { useRef } from "react";
-import { useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useState } from "react"
 import { ToastContainer, toast } from "react-toastify";
 import EE from "../../i18n/ee.json"
 import EN from "../../i18n/en.json"
 import "./i18nCompare.css"
 
-const fs = require('fs');
-
 function I18nCompare() {
-//    console.log(EE);
-    const [keeled, setKeeled] =useState({});
+    const [keeled, setKeeled] = useState({});
     const [mess, setMess] = useState("alglaadimine");
     const idRef = useRef();
     
-    const teeMidagi =()=> {
-        setMess("üks");
-        const json = JSON.stringify(keeled);
-     //   const fs = require('fs');
-     //   fs.writeFile('myjsonfile.json', json, 'utf8'); //callback
+    const teeMidagi =()=> setMess("üks");
+    const teeVeel   =()=> {setMess("kaks");console.log(keeled)}
+
+    const kirjutaKeel = keel =>{
+        let kirjutatavKeel = {"translation":{}}
+        for (let key in keeled){
+            kirjutatavKeel.translation[key] = keeled[key][keel];
+        }
+        //console.log(kirjutatavKeel);
+        //*
+        const file = new Blob([JSON.stringify(kirjutatavKeel)], {type: 'text/plain'});
+        const element = document.createElement("a");
+        element.href = URL.createObjectURL(file);
+        element.download = keel.toLowerCase()+".json";
+        document.body.appendChild(element);
+        element.click();
+        // */
     }
-    const teeVeel   =()=> setMess("veel");
     
     const teeKeel = () => {
         Object.entries(EE.translation).forEach(obj =>{
@@ -35,8 +42,8 @@ function I18nCompare() {
             }
             keeled[obj[0]]["EN"]=obj[1];
         });
-        console.log(keeled);
         setKeeled(keeled);
+        console.log(keeled);
     }
     const muuda = (keel,voti ) =>{
         idRef.current = {keel,voti};
@@ -62,7 +69,9 @@ function I18nCompare() {
         el.removeEventListener("blur", kinni);
         const uusSisu = el.innerHTML;
         keeled[voti][keel]=uusSisu;
-        teeKeel(Object.entries(keeled).slice());
+        console.log (voti, keel, uusSisu);
+        console.log(keeled[voti][keel]);
+        setKeeled(keeled);
     }
 
     useEffect (()=>{
@@ -74,20 +83,25 @@ function I18nCompare() {
         <>
         <ToastContainer />
         <h1>Keeled</h1>
-
         <button onClick={teeMidagi}>Lihtsalt üks nupp</button>
-        <button onClick={teeVeel}>Lihtsalt veel üks nupp</button> {mess}
+        <button onClick={teeVeel}>Lihtsalt veel üks nupp</button> {mess}<br /><hr />
+        Laadi alla: 
+        <button onClick={()=>kirjutaKeel("EE")}>EE</button>
+        <button onClick={()=>kirjutaKeel("EN")}>EN</button>
+
         {Object.entries(keeled).map(obj =>
             <div key={obj[0]}>
                 <span className="voti">{obj[0]}</span>
                 <span 
-                    onClick={ ()=>{muuda("EE", obj[0]);
-                                 }
-                            } 
+                    onClick={ ()=>{muuda("EE", obj[0]);}} 
                     id={"EE"+obj[0]} 
                     className={"EE"+(!obj[1].EE ? " tyhi":"")}
                 >{obj[1].EE}</span>
-                <span className={"EN"+(!obj[1].EN ? " tyhi":"")}>{obj[1].EN}</span>
+                <span 
+                    onClick={ ()=>{muuda("EN", obj[0]);}} 
+                    className={"EN"+(!obj[1].EN ? " tyhi":"")}
+                    id={"EN"+obj[0]}
+                >{obj[1].EN}</span>
             </div>
         )}
         </>
