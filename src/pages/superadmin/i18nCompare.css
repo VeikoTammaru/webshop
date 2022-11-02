@@ -1,6 +1,11 @@
 button{
     margin: 2px;
 }
+span {
+    display: inline-block;
+    width: 200px;
+    border-bottom: 1px dotted rgb(0, 0, 0,0.2);
+}
 .voti{
     display: inline-block;
     width: 200px;

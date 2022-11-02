@@ -1,50 +1,83 @@
-import { useState } from "react";
+import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import productsFile from "../data/products.json"
 
 function Chart() {
     const { t } = useTranslation();
-    const [chart, setChart] = useState(JSON.parse(sessionStorage.getItem("chart"))||[]);
+    const [cart, setCart] = useState([]);
+    const cartSS = useMemo(()=> JSON.parse(sessionStorage.getItem("cart")) || [], []);
+ 
+    useEffect(() => {
+        const cartWithProducts = cartSS.map(element => {
+            return {
+                  "product" : productsFile.find(product => product.id === element.id)
+                , "quantitly": element.quantitly
+            }
+        });
+        console.log(cartWithProducts);
+        setCart(cartWithProducts);
+    }, [cartSS]);
 
     const removeFromChart =ix =>{
-        chart.splice(ix,1);
-        setChart(chart.slice());
-        sessionStorage.setItem("chart", JSON.stringify(chart));
+        cartSS.splice(ix,1); 
+        cart.splice(ix,1);
+        setCart(cart.slice());
+        sessionStorage.setItem("cart", JSON.stringify(cartSS));
     }
 
     const emptyCart = () => {
-        setChart([]);
+        setCart([]);
         sessionStorage.removeItem("chart");
     }
     
     const calculateCartSum =() =>{
-        let chartSum = 0;
-        for (let i=0;i<chart.length;i++ ){
-            chartSum += Number(chart[i].price);
+        let cartSum = 0;
+        for (let i=0;i<cart.length;i++ ){
+            cartSum += Number(cart[i].product.price)*cart[i].quantitly;
         }
+        return parseFloat(cartSum).toFixed(2);
+    }
+    const increaseQuantity = (index)=>{
+        cartSS[index].quantitly = cartSS[index].quantitly+1;
+        cart  [index].quantitly = cart[index].quantitly +1;
         
-        return parseFloat(chartSum).toFixed(2);
+        setCart(cart.slice());
+        sessionStorage.setItem("cart", JSON.stringify(cartSS));
     }
     
+    const decreaseQuantity = (index)=>{
+        cartSS[index].quantitly = cartSS[index].quantitly-1;
+        cart  [index].quantitly = cart[index].quantitly -1;
+        if (cartSS[index].quantitly<=0){
+            removeFromChart(index);
+        } else {
+            setCart(cart.slice());
+            sessionStorage.setItem("cart", JSON.stringify(cartSS));
+        }
+    }
+
     return (  
         <>
-        {t("chart.total")} {calculateCartSum()}/ {t("chart.inChart")} {chart.length}
+        {t("cart.total")} {calculateCartSum()}/ {t("cart.inChart")} {cart.length}
         <Button variant="outline-danger" style={{float:"right"}} onClick={emptyCart}>{t("button.empty")}</Button><br></br>
-        
-        {chart.map((el,ix)=>
+        {cart.map((el,ix)=>
             <div key={ix} className="chartBox">  
-                <img src={el.image} alt=""/>
-                <div>{el.name}</div>
-                <div>{el.price}</div>
+                <img src={el.product.image} alt=""/>
+                <div>{el.product.name}</div>
+                <div>{el.product.price}</div>
+                <div>{(el.product.price*el.quantitly).toFixed(2)}</div>
                 <Button 
                     onClick={()=>removeFromChart(ix)}
                     variant="outline-danger"
                     title="button.empty"
                 >x</Button>
+                <button onClick={()=>decreaseQuantity(ix)}>-</button>
+                {el.quantitly}
+                <button onClick={()=>increaseQuantity(ix)}>+</button>
             </div>
         )}
-        
-        
         </>
     );
 }

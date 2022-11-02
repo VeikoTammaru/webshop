@@ -33,10 +33,16 @@ function HomePage() {
         setProducts(res);
     }
     const addToChart  = prodClicked =>{
-        const chart =JSON.parse(sessionStorage.getItem("chart"))||[];
+        const cart =JSON.parse(sessionStorage.getItem("cart"))||[];
+        const ix = cart.findIndex(el=> el.id===prodClicked.id) ;
+        if (ix>=0 ){
+            cart[ix].quantitly += 1;
+        }else{
+            cart.push({"id": prodClicked.id, "quantitly":1 });
+        }
         
-        chart.push (products[prodClicked]);
-        sessionStorage.setItem("chart", JSON.stringify(chart));
+        sessionStorage.setItem("cart", JSON.stringify(cart));
+        
         toast(`🦄 Lisatud ${prodClicked.name} ostukorvi lisatud!` , {
             position: "top-right",
             autoClose: 15000,
@@ -70,7 +76,7 @@ function HomePage() {
                     <img src={el.image} alt="!"/>
                     <div>{el.name}</div>
                     <div>{el.price}</div>
-                    <Button onClick={()=>addToChart(ix)}>+</Button>
+                    <Button onClick={()=>addToChart(el)}>+</Button>
                 </div>
              )}
         </>

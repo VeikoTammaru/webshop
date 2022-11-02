@@ -1,6 +1,4 @@
-import { useRef, useEffect } from "react";
-import { useState } from "react"
-import { ToastContainer, toast } from "react-toastify";
+import { useRef, useEffect, useState  } from "react";
 import EE from "../../i18n/ee.json"
 import EN from "../../i18n/en.json"
 import "./i18nCompare.css"
@@ -42,14 +40,14 @@ function I18nCompare() {
             }
             keeled[obj[0]]["EN"]=obj[1];
         });
-        setKeeled(keeled);
+        setKeeled(structuredClone(keeled));
         console.log(keeled);
     }
     const muuda = (keel,voti ) =>{
         idRef.current = {keel,voti};
         const el = document.getElementById(keel+voti);
         if(!el) {
-            toast.error(keel+voti+ " ei leitud");
+           console.log(keel+voti+ " ei leitud");
             return;
         }
         el.focus();
@@ -62,26 +60,22 @@ function I18nCompare() {
         const voti = idRef.current.voti;
         const el=document.getElementById(keel+voti);
         if(!el) {
-            toast.error(keel+voti+ " ei leitud");
+            console.log(keel+voti+ " ei leitud");
             return;
         }
         el.contentEditable = false;
         el.removeEventListener("blur", kinni);
-        const uusSisu = el.innerHTML;
-        keeled[voti][keel]=uusSisu;
-        console.log (voti, keel, uusSisu);
-        console.log(keeled[voti][keel]);
-        setKeeled(keeled);
+        keeled[voti][keel]=el.innerHTML;
+        setKeeled(structuredClone(keeled));
     }
 
     useEffect (()=>{
-        teeKeel(Object.entries(keeled).slice());
+        teeKeel();
         },[]   
     );
 
     return (  
         <>
-        <ToastContainer />
         <h1>Keeled</h1>
         <button onClick={teeMidagi}>Lihtsalt üks nupp</button>
         <button onClick={teeVeel}>Lihtsalt veel üks nupp</button> {mess}<br /><hr />
@@ -91,15 +85,15 @@ function I18nCompare() {
 
         {Object.entries(keeled).map(obj =>
             <div key={obj[0]}>
-                <span className="voti">{obj[0]}</span>
+                <span>{obj[0]}</span>
                 <span 
-                    onClick={ ()=>{muuda("EE", obj[0]);}} 
+                    onClick={ ()=>{muuda("EE", obj[0]);}} // onClick="muuda(this)"
                     id={"EE"+obj[0]} 
-                    className={"EE"+(!obj[1].EE ? " tyhi":"")}
+                    className={!obj[1].EE ? " tyhi":""}
                 >{obj[1].EE}</span>
                 <span 
                     onClick={ ()=>{muuda("EN", obj[0]);}} 
-                    className={"EN"+(!obj[1].EN ? " tyhi":"")}
+                    className={!obj[1].EN ? " tyhi":""}
                     id={"EN"+obj[0]}
                 >{obj[1].EN}</span>
             </div>
@@ -109,8 +103,3 @@ function I18nCompare() {
 }
 
 export default I18nCompare;
-
-// koosame objekti
-// koostame väljatrüki
-// koostame clik func
-// koostame salvestuse
